@@ -1,5 +1,5 @@
-clear all, clc, close all
-addpath('lib');
+clear, clc, close all
+addpath('../lib');
 
 plotOn = false;
 
@@ -19,10 +19,8 @@ n = size(S,2); % read the number of joints
 
 
 %% Control the motion of the robot between 2 set points
-fprintf('----------------------Dynamic Control of a 6-DoF Arm--------------------\n');
+fprintf('----------------------Dynamic Control of PUMA560 Arm--------------------\n');
 
-
-fprintf('Generating task space path... ');
 nPts = 100;
 fprintf('Generating task space path... ');
 phi = linspace(0, 4*pi, nPts);
@@ -32,28 +30,57 @@ y = r  .* sin(phi);
 z = 0.2 * ones(1,nPts);
 path = [x; y; z];
 fprintf('Done.\n');
-nPts = size(path,2);
+
 fprintf('Calculating the Inverse Kinematics... ');
 robot.plot(zeros(1,6)); hold on;
 scatter3(path(1,:), path(2,:), path(3,:), 'filled');
 title('Inverse Dynamics Control');
 
 %% YOUR CODE HERE
-% Calculate the inverse kinematics
+
+% INVERSE KINEMATICS
 waypoints = zeros(n,nPts);
 % waypoints = ...
-currentP = M(1:3,4);
 currentQ = zeros(1,n);
 
-for i = 1:nPts    
-    waypoints(:,i) = ikin(S, M, currentQ, path(:,i));
+% Compute Analytic Jacobian at current pose
+Ja = jacoba(S, M, currentQ);
+ii = 1;
+
+% IK loop
+while ii <= nPts
+   
+    targetPose = path(:, ii);
+    T = fkine(S, M, currentQ, 'space');
+    currentPose = T(1:3, 4);
+    
+    if norm(targetPose - currentPose) > 1e-3
+        Ja = jacoba(S, M, currentQ);
+        
+        % Damped Least Squares to solve IK
+        lambda = 0.75;
+        deltaQ = Ja' * pinv(Ja * Ja' + lambda^2 * eye(3)) * (targetPose - currentPose);
+        currentQ = currentQ + deltaQ';
+        T = fkine(S, M, currentQ, 'space');
+        currentPose = T(1:3, 4);
+    else
+        waypoints(:, ii) = currentQ;
+        ii = ii + 1;
+    end
 end
+
 
 fprintf('Done.\n');
 
+
+% Now, for each pair of consecutive waypoints, we will first calculate a
+% trajectory between these two points, and then calculate the torque
+% profile necessary to move from one point to the next.
 fprintf('Generating the Trajectory and Torque Profiles... ');
 nbytes = fprintf('0%%');
 
+% Inititalize the variables where we will store the torque profiles, joint
+% positions, and time, so that we can display them later
 tau_acc = [];
 jointPos_acc = [];
 t_acc = [];
@@ -63,8 +90,8 @@ for jj = 1 : nPts - 1
     nbytes = fprintf('%3.0f%%', 100*(jj/(nPts - 1)));
    
     % Initialize the time vector
-    dt = 1;       % time step [s]
-    t  = 0 : dt : 1; % total time [s]
+    dt = 1e-3;       % time step [s]
+    t  = 0 : dt : 0.1; % total time [s]
 
     % Initialize the arrays where we will accumulate the output of the robot
     % dynamics
@@ -82,7 +109,6 @@ for jj = 1 : nPts - 1
         params_traj.t = [0 t(end)]; % start and end time of each movement step
         params_traj.time_step = dt;
         params_traj.q = [waypoints(ii,jj) waypoints(ii,jj+1)];
-
         params_traj.v = [0 0];
         params_traj.a = [0 0];
 
@@ -94,7 +120,7 @@ for jj = 1 : nPts - 1
         jointVel_prescribed(ii,:) = traj.v;
         jointAcc_prescribed(ii,:) = traj.a;
     end
-    
+
     % Initialize the parameters for both inverse and forward dynamics
     params_rne.g = g; % gravity
     params_rne.S = S; % screw axes
@@ -115,10 +141,9 @@ for jj = 1 : nPts - 1
         params_rne.jointPos = jointPos_prescribed(:,ii);
         params_rne.jointVel = jointVel_prescribed(:,ii);
         params_rne.jointAcc = jointAcc_prescribed(:,ii);
-        Ftip = zeros(6,1);
- 
-        params_rne.Ftip = Ftip; % end effector wrench
+        params_rne.Ftip = zeros(6,1); % end effector wrench
 
+        % Calculate the joint torques using the Recursive Newton-Euler algorithm
         tau_prescribed(:,ii) = rne(params_rne);
 
         % Feed the torques to the forward dynamics model and perform one
@@ -126,7 +151,7 @@ for jj = 1 : nPts - 1
         params_fdyn.jointPos = jointPos_actual(:,ii);
         params_fdyn.jointVel = jointVel_actual(:,ii);
         params_fdyn.tau = tau_prescribed(:,ii);
-        params_fdyn.Ftip = Ftip; % end effector wrench
+        params_fdyn.Ftip = zeros(6,1);
 
         jointAcc = fdyn(params_fdyn);
 
@@ -147,20 +172,26 @@ fprintf('\nDone. Simulating the robot...');
 
 %% Animate the robot
 title('Inverse Dynamics Control');
-robot.plot(jointPos_acc(:,1:end)','trail',{'r', 'LineWidth', 2}, 'movie', 'RBE-501-2023-HW4-spiral-wo_payload.mp4');
+% ANimation command did not work on my Ubuntu machine
+%robot.plot(jointPos_acc(:,1:100:end)','trail',{'r', 'LineWidth', 2}, 'movie', 'RBE-501-2024-HW4-spiral.mp4');
+robot.plot(jointPos_acc(:,1:100:end)','trail',{'r', 'LineWidth', 2});
 fprintf('Done.\n');
 
+
 %% Display the Joint Torques
-figure, hold on, grid on
+figure;
+hold on;
+grid on;
+
+% Plot torque profiles for each joint
 plot(t_acc, tau_acc(1,:), 'Linewidth', 2);
 plot(t_acc, tau_acc(2,:), 'Linewidth', 2);
 plot(t_acc, tau_acc(3,:), 'Linewidth', 2);
 plot(t_acc, tau_acc(4,:), 'Linewidth', 2);
 plot(t_acc, tau_acc(5,:), 'Linewidth', 2);
 plot(t_acc, tau_acc(6,:), 'Linewidth', 2);
+
 title('Torque Profiles');
 xlabel('Time [s]'), ylabel('Torque [Nm]');
 legend({'Joint 1', 'Joint 2', 'Joint 3', 'Joint 4', 'Joint 5', 'Joint 6'});
 set(gca, 'FontSize', 14);
-
-fprintf('Program completed successfully.\n');
