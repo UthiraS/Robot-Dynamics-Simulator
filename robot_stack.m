@@ -1,4 +1,4 @@
-function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip)
+function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip,path)
 
     % Create the environment
     g = [0 0 -9.81]; % Gravity Vector [m/s^2]
@@ -10,7 +10,7 @@ function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_s
     % Create a kinematic model of the robot
     [S,M] = make_kinematics_model(robot);
     n = size(S,2); % read the number of joints
-    nPts = 100;
+    
     % Create a dynamical model of the robot
     [Mlist,Glist] = make_dynamics_model(robot);
     
@@ -18,8 +18,8 @@ function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_s
     %% POSITION CONTROL  %%
     %% SPIRAL PATH
     fprintf('----------------------Dynamic Control of PUMA560 Arm--------------------\n');
-    path = sprial(nPts);
-    
+    % path = sprial(nPts); %either use spiral function or user given path point
+    % nPts = 100;
     
     
     %% INVERSE KINEMATICS

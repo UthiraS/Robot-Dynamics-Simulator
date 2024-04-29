@@ -24,29 +24,16 @@ function createRobotSimulatorApp()
     %           'Position', [410, 10, 120, 25], 'Callback', @make_robot_callback);
 
     % Control checkboxes
-    posXCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'FX', 'Position', [10, 10, 50, 25]);
-    posYCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'FY', 'Position', [70, 10, 50, 25]);
-    posZCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'FZ', 'Position', [130, 10, 50, 25]);
+    posXCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'X', 'Position', [10, 10, 50, 25]);
+    posYCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'Y', 'Position', [70, 10, 50, 25]);
+    posZCheckbox = uicontrol('Parent', controlPanel, 'Style', 'checkbox', 'String', 'Z', 'Position', [130, 10, 50, 25]);
    
-    % Create labels for each parameter
-    labels = {'X:(m)','Y:(m)', 'Z:(m)', 'Roll:(degrees)', 'Pitch:(degrees)', 'Yaw:(degrees)'};
-    numLabels = numel(labels);
-    for i = 1:numLabels
-        uicontrol('Parent', controlPanel, 'Style', 'text', 'String', labels{i}, ...
-                  'Position', [(i-1) * 100,60 , 100, 25]);
-    end
-    
-    % Create text boxes for each parameter
-    textBoxPositions = [0, 40;100, 40; 200, 40; 300, 40; 400, 40; 500, 40]; % Adjust positions as needed
-    for i = 1:numLabels
-        uicontrol('Parent', controlPanel, 'Style', 'edit', 'String', '0', ...
-                  'Position', [textBoxPositions(i, 1), textBoxPositions(i, 2), 100, 25], ...
-                  'Callback', @(src, event) externalPathCallback(src, event, i));
-    end
-
-
+     % External path label and field
+    uicontrol('Parent', controlPanel, 'Style', 'text', 'String', 'Path Input:', 'Position', [190, 40, 100, 25]);
+    externalPathField = uicontrol('Parent', controlPanel, 'Style', 'edit', 'String', '0', ...
+                                   'Position', [300, 40, 100, 25], 'Callback', @externalPathCallback);
     % External force label and field
-    uicontrol('Parent', controlPanel, 'Style', 'text', 'String', 'External Force:(N)', 'Position', [190, 10, 100, 25]);
+    uicontrol('Parent', controlPanel, 'Style', 'text', 'String', 'External Force:', 'Position', [190, 10, 100, 25]);
     externalForceField = uicontrol('Parent', controlPanel, 'Style', 'edit', 'String', '0', ...
                                    'Position', [300, 10, 100, 25], 'Callback', @externalForceCallback);
 
@@ -59,12 +46,6 @@ function createRobotSimulatorApp()
    
    
     
-end
-function externalPathCallback(src, event, index)
-    % Callback function for text boxes
-    disp(['Value entered for parameter ', num2str(index)]);
-    cur_value
-    disp(['New value: ', get(src, 'String')]);
 end
 function externalpathCallback(src, event)
     global posXCheckbox posYCheckbox posZCheckbox robotAxes robotPanel Ftip path;
@@ -121,9 +102,9 @@ end
 %     robot.plot(zeros(1,6));
 % end
 function animateRobot(src, event)
-   global robotAxes robot robotPanel Ftip path;
+   global robotAxes robot robotPanel Ftip Path;
    
-   [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip, path);
+   [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip);
    nPts = 100;
   
    path = sprial(nPts);
