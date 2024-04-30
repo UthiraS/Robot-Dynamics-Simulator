@@ -1,47 +1,44 @@
-# Robot-Dynamics-Simulator
+# Robot-Dynamics-Simulator README
 
-##steps to run the code \n
-Run GUI.m file to visualize the GUI
+## Overview
+This document outlines the steps and functions used in the Robot-Dynamics-Simulator, a tool for simulating robot dynamics through a graphical user interface (GUI).
 
-in GUI.m...
+## Getting Started
+### Steps to Run the Simulator
+1. **Start the GUI**: Execute the `GUI.m` file to launch the GUI, which is essential for visualizing robot dynamics.
 
+### Functions within `GUI.m`
+- **`robot_stack()`**: This function allows users to input `Ftip` (external force at the tip) or a path and returns the torque profile along with joint accelerations, velocities, and positions.
+- **`animate_robot()`**: Executes a one-time simulation of a spiral path. It visualizes the robot's movement in the GUI and plots the corresponding torque.
+- **`externalForceCallback(src, event)`**: Detects user-inputted force and updates the `Ftip` value accordingly.
+- **`externalPathCallback(src, event)`**: Captures user-inputted path points and updates the path value.
 
-use robot_stack() function to enter ftip or path and get torque profile and joint acc, vel, positions 
+## Functions in Other Files
+### `ik.m`
+- **Function**: `waypoints = ik(S, M, n, nPts, currentQ, path)`
+- **Description**: Calculates waypoints based on the given path, screw axes `S`, home configuration `M`, and the current joint configuration `currentQ`.
+- **Output**: `waypoints` - calculated waypoints for the robot.
 
+### `robot_stack()`
+- **Function**: `[robot, tau_acc, jointPos_acc, jointVel_acc, jointAcl_acc, t_acc] = robot_stack(Ftip)`
+- **Description**: Processes the user-inputted `Ftip` to simulate robot dynamics and calculates various dynamics parameters.
+- **Outputs**:
+  - `robot` - Data for plotting robot dynamics.
+  - `tau_acc` - Accumulated torque.
+  - `jointPos_acc` - Joint positions.
+  - `jointVel_acc` - Joint velocities.
+  - `jointAcl_acc` - Joint accelerations.
+  - `t_acc` - Time intervals.
 
-use animate_robot() to get "one time simulation" of spiral path and visualize in gui and plot corresponding torque
-
-use externalForceCallback(src, event)-to detect user inputed force and update Ftip value
-
-
-use externalPathCallback(src, event)-to detect user inputed path points and update path value
-
-
-
-funtions in othe files
-1. ik.m - function waypoints =ik(S,M,n,nPts,currentQ,path)
-takes given path, S, M as input 
-gives waypoints as output
-
-2. robot_stack() - function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip);
-takes Ftip as input from user and 
-gives output
-
-robot - for plotting
-tau_acc - torque 
-jointPos_acc- joint accelerations
-jointVel_acc - joint velocities
-jointAcl_acc - joint positions
-t_acc - time
-
-3. gen_traj_torq()- function [tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] =gen_traj_torq(S,M, Mlist, Glist,g,n,nPts,waypoints,Ftip)
-
-input 0 Mlist, Glist, S,M, waypoints, Ftip
-gives output
-
-
-tau_acc - torque 
-jointPos_acc- joint accelerations
-jointVel_acc - joint velocities
-jointAcl_acc - joint positions
-t_acc - time
+### `gen_traj_torq()`
+- **Function**: `[tau_acc, jointPos_acc, jointVel_acc, jointAcl_acc, t_acc] = gen_traj_torq(S, M, Mlist, Glist, g, n, nPts, waypoints, Ftip)`
+- **Description**: Generates a trajectory and torque profile based on the input parameters.
+- **Inputs**:
+  - `Mlist`, `Glist`, `S`, `M`, `waypoints`, `Ftip` - Various robot parameters and dynamics inputs.
+  - `g` - Gravitational force vector.
+- **Outputs**:
+  - `tau_acc` - Torque.
+  - `jointPos_acc` - Joint positions.
+  - `jointVel_acc` - Joint velocities.
+  - `jointAcl_acc` - Joint accelerations.
+  - `t_acc` - Time intervals.
