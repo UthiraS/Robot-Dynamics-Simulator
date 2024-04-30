@@ -20,8 +20,8 @@ This document outlines the steps and functions used in the Robot-Dynamics-Simula
 - **Output**: `waypoints` - calculated waypoints for the robot.
 
 ### `robot_stack()`
-- **Function**: `[robot, tau_acc, jointPos_acc, jointVel_acc, jointAcl_acc, t_acc] = robot_stack(Ftip)`
-- **Description**: Processes the user-inputted `Ftip` to simulate robot dynamics and calculates various dynamics parameters.
+- **Function**: `[robot, tau_acc, jointPos_acc, jointVel_acc, jointAcl_acc, t_acc] = robot_stack(Ftip,path)`
+- **Description**: Processes the user-inputted `Ftip` or `path` to simulate robot dynamics and calculates various dynamics parameters.
 - **Outputs**:
   - `robot` - Data for plotting robot dynamics.
   - `tau_acc` - Accumulated torque.
