@@ -6,7 +6,7 @@ This document outlines the steps and functions used in the Robot-Dynamics-Simula
 ## Getting Started
 ### Steps to Run the Simulator
 1. **Start the GUI**: Execute the `GUI.m` file to launch the GUI, which is essential for visualizing robot dynamics.
-![Robot Dynamics Simulation](https://example.com/path/to/image.jpg)
+![Robot Dynamics Simulation](Capture.JPG)
 
 
 ### Functions within `GUI.m`
