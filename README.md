@@ -8,7 +8,7 @@ This document outlines the steps and functions used in the Robot-Dynamics-Simula
 1. **Start the GUI**: Execute the `GUI.m` file to launch the GUI, which is essential for visualizing robot dynamics.
 
 ### Functions within `GUI.m`
-- **`robot_stack()`**: This function allows users to input `Ftip` (external force at the tip) or a path and returns the torque profile along with joint accelerations, velocities, and positions.
+- **`robot_stack()`**: This function allows users to input `Ftip` (external force at the tip) or a `path point ` and returns the torque profile along with joint accelerations, velocities, and positions.
 - **`animate_robot()`**: Executes a one-time simulation of a spiral path. It visualizes the robot's movement in the GUI and plots the corresponding torque.
 - **`externalForceCallback(src, event)`**: Detects user-inputted force and updates the `Ftip` value accordingly.
 - **`externalPathCallback(src, event)`**: Captures user-inputted path points and updates the path value.
