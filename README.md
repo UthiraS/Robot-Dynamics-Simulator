@@ -1,9 +1,9 @@
 # Robot-Dynamics-Simulator
 
-##steps to run the code
+##steps to run the code \n
 Run GUI.m file to visualize the GUI
 
-in GUI.m
+in GUI.m...
 use robot_stack() function to enter ftip or path and get torque profile and joint acc, vel, positions 
 use animate_robot() to get "one time simulation" of spiral path and visualize in gui and plot corresponding torque
 use externalForceCallback(src, event)-to detect user inputed force and update Ftip value
