@@ -67,13 +67,9 @@ function [tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] =gen_traj_torq(
             params_rne.jointPos = jointPos_prescribed(:,ii);
             params_rne.jointVel = jointVel_prescribed(:,ii);
             params_rne.jointAcc = jointAcc_prescribed(:,ii);
-            params_rne.Ftip = Ftip; % end effector wrench
-
-            % % calculate the wrench created by the payload 
-            % T = fkine(S,M,params_rne.jointPos,'space');
-            % Ftip_inS = [cross(T(1:3,4),-g);-g];
-            % params_rne.Ftip = adjoint(T)'* Ftip_inS; % end effector wrench
-
+            T = fkine(S, M, jointPos_prescribed(:,ii), 'space');
+            ext_wrench = [cross(T(1:3, 4), -Ftip(4:6)); -Ftip(4:6)]; 
+            params_rne.Ftip = adjoint(T)'*ext_wrench; % end effector wrench
             
             % Calculate the joint torques using the Recursive Newton-Euler algorithm
             tau_prescribed(:,ii) = rne(params_rne);
@@ -83,8 +79,10 @@ function [tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] =gen_traj_torq(
             params_fdyn.jointPos = jointPos_actual(:,ii);
             params_fdyn.jointVel = jointVel_actual(:,ii);
             params_fdyn.tau = tau_prescribed(:,ii);
-            params_fdyn.Ftip = Ftip;
-    
+            T = fkine(S, M, jointPos_actual(:,ii), 'space');
+            ext_wrench = [cross(T(1:3, 4), -Ftip(4:6)); -Ftip(4:6)]; 
+            params_fdyn.Ftip = adjoint(T)'*ext_wrench; % end effector wrench
+                
             jointAcc = fdyn(params_fdyn);
     
             % Integrate the joint accelerations to get velocity and
@@ -103,3 +101,4 @@ function [tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] =gen_traj_torq(
         t_acc = [t_acc t+t(end)*(jj-1)];
     end
 end
+
