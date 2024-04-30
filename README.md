@@ -6,6 +6,8 @@ This document outlines the steps and functions used in the Robot-Dynamics-Simula
 ## Getting Started
 ### Steps to Run the Simulator
 1. **Start the GUI**: Execute the `GUI.m` file to launch the GUI, which is essential for visualizing robot dynamics.
+![Robot Dynamics Simulation](https://example.com/path/to/image.jpg)
+
 
 ### Functions within `GUI.m`
 - **`robot_stack()`**: This function allows users to input `Ftip` (external force at the tip) or a `path point ` and returns the torque profile along with joint accelerations, velocities, and positions.
