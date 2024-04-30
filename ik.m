@@ -16,7 +16,7 @@ function waypoints =ik(S,M,n,nPts,currentQ,V)
     while ii <= nPts
        
         
-        T = fkine(S, M, currentQ, 'space');
+        T_current = fkine(S, M, currentQ, 'space');
         currentPose = MatrixLog6(T_current);
         currentPose = [currentPose(3,2); currentPose(1,3); currentPose(2,1); T_current(1:3,4)];
         targetPose = V; 
@@ -26,7 +26,12 @@ function waypoints =ik(S,M,n,nPts,currentQ,V)
             
             % Damped Least Squares to solve IK
             lambda = 0.75;
-            deltaQ = Ja' * pinv(Ja * Ja' + lambda^2 * eye(6)) * (targetPose - currentPose);
+            % Display sizes for debugging
+            disp(['Size of TargetPose: ', mat2str(size(targetPose))]);
+            disp(['Size of CurrentPose: ', mat2str(size(currentPose))]);
+            disp(['Size of Ja: ', mat2str(size(Ja))]);
+            deltaQ = Ja' * pinv(Ja * Ja' + lambda^2 * eye(3)) * (targetPose - currentPose);
+
             currentQ = currentQ + deltaQ';
             currentQ = min(max(qlim(:,1)', currentQ), qlim(:,2)');
             T = fkine(S, M, currentQ, 'space');

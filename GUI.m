@@ -62,21 +62,33 @@ function createRobotSimulatorApp()
 end
 function externalPathCallback(src, event, index)
     % Callback function for text boxes
-    disp(['Value entered for parameter ', num2str(index)]);
-    cur_value
-    disp(['New value: ', get(src, 'String')]);
-end
-function externalpathCallback(src, event)
     global posXCheckbox posYCheckbox posZCheckbox robotAxes robotPanel Ftip path;
-    pathValue = str2mat(src.String); %I AM GETTING PATH AS MATRIX 
-    if isnan(pathValue) || pathValue < 0
-        src.String = '0'; % Reset to default
-        disp(['External Path point not given']);
-    else
-        disp(pathValue);
-        path = pathValue;
+    
+    % Display the parameter index
+    disp(['Value entered for parameter ', num2str(index)]);
+    
+    % Initialize path if not already initialized
+    if isempty(path)
+        path = zeros(6,1);  % Assuming 6 parameters as a typical case
     end
-
+    
+    % Get the numeric value from the text box
+    newValue = str2double(get(src, 'String'));
+    
+    % Validate the input to ensure it is a number
+    if isnan(newValue)
+        % Reset the text box if the input is not valid
+        set(src, 'String', '0');
+        disp('Invalid input: Please enter a numeric value.');
+    else
+        % Update the path array at the specified index
+        path(index) = newValue;
+        % Display the updated value for debugging
+        disp(['New value set at path(', num2str(index), '): ', num2str(path(index))]);
+        % Optionally display the entire path array
+        disp('Updated path values:');
+        disp(path);
+    end
 end
 function externalForceCallback(src, event)
     global posXCheckbox posYCheckbox posZCheckbox robotAxes robotPanel Ftip;
@@ -105,7 +117,7 @@ function externalForceCallback(src, event)
             Ftip(6) = forceValue * 9.81;
             % Additional logic for Z
         end
-         robotAxes = axes('Parent', robotPanel, 'Position', [0.05, 0.1, 0.9, 0.85]);
+         % robotAxes = axes('Parent', robotPanel, 'Position', [0.05, 0.1, 0.9, 0.85]);
          % cla(robotAxes);
         % [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_stack(Ftip);
         % plot_function(tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc)

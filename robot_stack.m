@@ -20,7 +20,8 @@ function [robot,tau_acc,jointPos_acc,jointVel_acc,jointAcl_acc, t_acc] = robot_s
     fprintf('----------------------Dynamic Control of PUMA560 Arm--------------------\n');
     % path = sprial(nPts); %either use spiral function or user given path point
     % nPts = 100;
-    
+    nPts = size(path,2);
+    disp(nPts);
     
     %% INVERSE KINEMATICS
       
