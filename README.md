@@ -1,7 +1,7 @@
 # Robot-Dynamics-Simulator README
 go to `gui` branch and clone the repository.
 ## Overview
-This document outlines the steps and functions used in the Robot-Dynamics-Simulator, a tool for simulating robot dynamics through a graphical user interface (GUI).
+This project outlines the steps and functions used in the Robot-Dynamics-Simulator, a tool for simulating robot dynamics through a graphical user interface (GUI).
 
 ## Getting Started
 ### Steps to Run the Simulator
